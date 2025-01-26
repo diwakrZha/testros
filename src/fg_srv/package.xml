@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>fg_srv</name>
+  <version>0.0.1</version>
+  <description>FleetG Mission Management System</description>
+  <maintainer email="diwaker@dj.dj">Diwakere</maintainer>
+  <license>Apache License 2.0</license>
+
+  <!-- For building Python packages + generating ROS 2 interfaces -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_python</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+
+  <!-- Build dependencies: we generate .action files which need rosidl. 
+       Also include any ROS packages needed only at build time. -->
+  <build_depend>rosidl_default_generators</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>gazebo_ros</build_depend>
+  <build_depend>robot_state_publisher</build_depend>
+  <build_depend>xacro</build_depend>
+
+  <!-- Runtime dependencies: generated action code, plus your Python libs. -->
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <!-- Python libs from your code -->
+  <exec_depend>fastapi</exec_depend>
+  <exec_depend>uvicorn</exec_depend>
+  <exec_depend>requests</exec_depend>
+  <exec_depend>pydantic</exec_depend>
+
+  <!-- Mark this as an interface package (it has .msg/.srv/.action) -->
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <export>
+    <!-- We still install Python code, but also use rosidl generation -->
+    <build_type>ament_python</build_type>
+    <gazebo_ros plugin_path="${prefix}/lib" gazebo_media_path="${prefix}" />
+  </export>
+</package>

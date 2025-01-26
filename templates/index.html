@@ -1,0 +1,433 @@
+<!-- src/fg_srv/templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>FleetGlue</title>
+    <!-- Google Font: Lato -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* EXACT styling from your original, plus we added a styles for .erp-config details card. */
+
+      body {
+        font-family: "Lato", sans-serif;
+        background-color: #ffffff;
+        color: #333333;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+      header {
+        width: 100%;
+        padding: 20px 40px;
+        text-align: left;
+        margin-top: 50px;
+        margin-bottom: 40px;
+        margin-left: 70px;
+        display: flex;
+        align-items: center;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 2.25em;
+        font-weight: 700;
+        color: #333333;
+        margin-left: 20px;
+      }
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        width: 80%;
+        max-width: 1200px;
+        box-sizing: border-box;
+        margin-left: auto;
+        margin-right: auto;
+        gap: 50px;
+        position: relative;
+      }
+      .container::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background-color: #e0e0e0;
+        transform: translateX(-50%);
+      }
+      .left-panel,
+      .right-panel {
+        padding: 40px;
+        width: 35%;
+        box-sizing: border-box;
+      }
+      .left-panel h2,
+      .right-panel h2 {
+        margin-bottom: 20px;
+        font-size: 1.5em;
+        font-weight: 400;
+        color: #555555;
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      label {
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #555555;
+      }
+      input[type="text"],
+      input[type="number"] {
+        padding: 10px 15px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        font-size: 1em;
+        width: 100%;
+        box-sizing: border-box;
+        transition: border-color 0.3s;
+      }
+      input[type="text"]:focus,
+      input[type="number"]:focus {
+        border-color: #999999;
+        outline: none;
+      }
+      button {
+        padding: 12px 20px;
+        background-color: #ffffff;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+      button:hover {
+        background-color: #f0f0f0;
+        border-color: #999999;
+      }
+      .response,
+      .current-mission {
+        margin-top: 20px;
+      }
+      pre {
+        background-color: #ffffff;
+        padding: 15px;
+        border: none;
+        border-radius: 4px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        font-size: 0.95em;
+        color: #333333;
+      }
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
+        }
+        .container::before {
+          display: none;
+        }
+        .left-panel,
+        .right-panel {
+          width: 100%;
+          padding: 20px;
+        }
+        .left-panel {
+          border-right: none;
+          border-bottom: 1px solid #e0e0e0;
+        }
+        header h1 {
+          font-size: 2em;
+          margin-left: 20px;
+        }
+      }
+
+      /* ERP config collapsible card styles */
+      details.erp-config {
+        width: 80%;
+        max-width: 1200px;
+        margin-bottom: 20px;
+      }
+      details.erp-config summary {
+        font-weight: 700;
+        font-size: 1.1em;
+        cursor: pointer;
+        margin-bottom: 8px;
+      }
+      .erp-config-panel {
+        background-color: #fafafa;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 16px;
+      }
+      .erp-group-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .erp-group-row label {
+        width: 140px;
+        font-weight: bold;
+      }
+      .erp-group-row input[type="text"],
+      .erp-group-row input[type="password"],
+      .erp-group-row input[type="url"] {
+        width: 180px;
+        margin-right: 8px;
+      }
+      .erp-group-row input[type="checkbox"] {
+        margin-right: 5px;
+      }
+      #config-status {
+        margin-top: 10px;
+        font-size: 0.9em;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>FleetGlue</h1>
+    </header>
+
+    <!-- Collapsible ERP Config card -->
+    <details class="erp-config">
+      <summary>ERP / MES Configuration</summary>
+      <div class="erp-config-panel">
+        <form id="config-form">
+          <!-- Each row = one system -->
+          <div class="erp-group-row">
+            <label>Opcenter:</label>
+            <input type="checkbox" name="OPENCENTER_ENABLED" />
+            <input type="url" name="OPENCENTER_URL" placeholder="URL" />
+            <input type="text" name="OPENCENTER_USER" placeholder="User" />
+            <input type="password" name="OPENCENTER_PASS" placeholder="Pass" />
+          </div>
+          <div class="erp-group-row">
+            <label>SAP MES:</label>
+            <input type="checkbox" name="SAP_MES_ENABLED" />
+            <input type="url" name="SAP_MES_URL" placeholder="URL" />
+            <input type="text" name="SAP_MES_USER" placeholder="User" />
+            <input type="password" name="SAP_MES_PASS" placeholder="Pass" />
+          </div>
+          <div class="erp-group-row">
+            <label>Odoo ERP:</label>
+            <input type="checkbox" name="ODOO_ENABLED" />
+            <input type="url" name="ODOO_URL" placeholder="URL" />
+            <input type="text" name="ODOO_DB" placeholder="DB" />
+            <input type="text" name="ODOO_USER" placeholder="User" />
+            <input type="password" name="ODOO_PASS" placeholder="Pass" />
+          </div>
+          <div class="erp-group-row">
+            <label>SAP ERP:</label>
+            <input type="checkbox" name="SAP_ERP_ENABLED" />
+            <input type="url" name="SAP_ERP_URL" placeholder="URL" />
+            <input type="text" name="SAP_ERP_USER" placeholder="User" />
+            <input type="password" name="SAP_ERP_PASS" placeholder="Pass" />
+          </div>
+          <div class="erp-group-row">
+            <label>Dynamics 365:</label>
+            <input type="checkbox" name="D365_ENABLED" />
+            <input type="url" name="D365_URL" placeholder="URL" />
+            <input type="text" name="D365_USER" placeholder="User" />
+            <input type="password" name="D365_PASS" placeholder="Pass" />
+          </div>
+          <button type="submit">Save Config</button>
+          <div id="config-status"></div>
+        </form>
+      </div>
+    </details>
+
+    <div class="container">
+      <!-- Left Panel: Submit Mission -->
+      <div class="left-panel">
+        <h2>Submit a Mission</h2>
+        <form id="mission-form">
+          <div class="form-group">
+            <label for="mission_id">Mission ID:</label>
+            <input
+              type="text"
+              id="mission_id"
+              name="mission_id"
+              value="mission_002"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="mission_type">Mission Type:</label>
+            <input
+              type="text"
+              id="mission_type"
+              name="mission_type"
+              value="exploration"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="latitude">Target Latitude:</label>
+            <input
+              type="number"
+              step="any"
+              id="latitude"
+              name="latitude"
+              value="37.7749"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="longitude">Target Longitude:</label>
+            <input
+              type="number"
+              step="any"
+              id="longitude"
+              name="longitude"
+              value="-122.4194"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="priority">Priority:</label>
+            <input
+              type="number"
+              id="priority"
+              name="priority"
+              value="12"
+              required
+            />
+          </div>
+          <button type="submit">Submit Mission</button>
+        </form>
+        <div class="response" id="response">
+          <h2>Response</h2>
+          <pre id="response-text">No response yet.</pre>
+        </div>
+      </div>
+
+      <!-- Right Panel: Current Mission -->
+      <div class="right-panel">
+        <h2>Current Mission</h2>
+        <div class="current-mission" id="current-mission">
+          <pre id="mission-data">No mission data available.</pre>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 1. On load, fetch existing config
+      fetch("/get_config")
+        .then((res) => {
+          if (!res.ok) throw new Error("Not logged in or session invalid");
+          return res.json();
+        })
+        .then((config) => {
+          for (const [key, val] of Object.entries(config)) {
+            const el = document.querySelector(`[name='${key}']`);
+            if (!el) continue;
+            if (el.type === "checkbox") {
+              el.checked = val.toString().toLowerCase() === "true";
+            } else {
+              el.value = val;
+            }
+          }
+        })
+        .catch((err) => console.error("get_config error:", err));
+
+      // 2. Save config
+      document.getElementById("config-form").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = {};
+        formData.forEach((value, key) => {
+          const inputEl = document.querySelector(`[name='${key}']`);
+          if (inputEl && inputEl.type === "checkbox") {
+            data[key] = inputEl.checked;
+          } else {
+            data[key] = value;
+          }
+        });
+        fetch("/update_config", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Update config failed");
+            return res.json();
+          })
+          .then((resData) => {
+            document.getElementById("config-status").textContent =
+              "Config updated: " + JSON.stringify(resData, null, 2);
+          })
+          .catch((err) => {
+            document.getElementById("config-status").textContent =
+              "Error: " + err;
+          });
+      });
+
+      // 3. Mission form
+      document.getElementById("mission-form").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const mission_id = document.getElementById("mission_id").value;
+        const mission_type = document.getElementById("mission_type").value;
+        const latitude = parseFloat(document.getElementById("latitude").value);
+        const longitude = parseFloat(document.getElementById("longitude").value);
+        const priority = parseInt(document.getElementById("priority").value);
+
+        const data = {
+          mission_id,
+          mission_type,
+          target_coordinates: { latitude, longitude },
+          priority
+        };
+
+        fetch("/mission", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+          .then((res) => res.json())
+          .then((result) => {
+            document.getElementById("response-text").textContent =
+              JSON.stringify(result, null, 4);
+          })
+          .catch((error) => {
+            document.getElementById("response-text").textContent =
+              "Error: " + error;
+          });
+      });
+
+      // 4. Auto-fetch mission data
+      function fetchMissionData() {
+        fetch("/mission")
+          .then((res) => {
+            if (!res.ok) throw new Error("Not logged in or session expired");
+            return res.json();
+          })
+          .then((mission) => {
+            document.getElementById("mission-data").textContent =
+              JSON.stringify(mission, null, 4);
+          })
+          .catch((err) => {
+            document.getElementById("mission-data").textContent =
+              "Error: " + err;
+          });
+      }
+      setInterval(fetchMissionData, 2000);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,66 @@
+services:
+  mqtt_broker:
+    image: eclipse-mosquitto:2.0
+    container_name: mqtt_broker
+    env_file:
+      - .env
+    networks:
+      - mission_network
+    ports:
+      - "${MQTT_BROKER_PORT}:1883"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+
+  ros2_mission_system:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ros2_mission_system
+    env_file:
+      - .env
+    depends_on:
+      - mqtt_broker
+    networks:
+      - mission_network
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./templates:/app/templates
+      - ./static:/app/static
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - $HOME/.Xauthority:/tmp/.Xauthority
+    command: >
+      /bin/bash -c "
+        source /opt/ros/$ROS_DISTRO/setup.bash &&
+        source /app/install/setup.bash &&
+        ros2 launch fg_srv mission_system.launch.py
+      "
+
+  test_runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: test_runner
+    env_file:
+      - .env
+    profiles:
+      - test
+    depends_on:
+      - mqtt_broker
+      - ros2_mission_system
+    networks:
+      - mission_network
+    volumes:
+      - .:/app  # Mount the entire project for tests
+    command: >
+      /bin/bash -c "
+        source /opt/ros/$ROS_DISTRO/setup.bash &&
+        source /app/install/setup.bash &&
+        pytest src/fg_srv/test/ --ros-domain-id=${ROS_DOMAIN_ID}
+      "
+
+networks:
+  mission_network:
+    driver: bridge

@@ -1,0 +1,17 @@
+# Mission.action
+
+# Goal
+string mission_id
+string mission_type
+float64 latitude
+float64 longitude
+int32 priority
+
+---
+# Result
+bool success
+string message
+
+---
+# Feedback
+float64 progress
